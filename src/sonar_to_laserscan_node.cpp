@@ -53,7 +53,7 @@ void publishLaserFromSonar() {
   // Populate the LaserScan message
   sensor_msgs::LaserScan scan;
   scan.header.stamp = sonar_timestamp;
-  scan.header.frame_id = "laser_frame";
+  scan.header.frame_id = "base_link";
   scan.angle_min = DEG_TO_RAD(MIN_ANGLE);
   scan.angle_max = DEG_TO_RAD(MAX_ANGLE);
   scan.angle_increment = DEG_TO_RAD(DEG_INCREMENT);
