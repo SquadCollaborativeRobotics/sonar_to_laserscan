@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package>
+  <name>sonar_to_laserscan</name>
+  <version>0.0.0</version>
+  <description>The sonar_to_laserscan package converts amigobot sonar scan depthcloud data to laserscan data for use by amcl.</description>
+  
+  <maintainer email="elucidation@gmail.com">Sam</maintainer>
+  
+  <license>Apache v2 license</license>
+  
+  <url type="website">https://github.com/SquadCollaborativeRobotics/sonar_to_laserscan</url>
+  
+  <author email="elucidation@gmail.com">Sam Ansari</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <run_depend>roscpp</run_depend>
+
+</package>
