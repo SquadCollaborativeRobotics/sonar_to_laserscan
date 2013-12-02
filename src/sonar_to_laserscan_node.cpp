@@ -45,7 +45,7 @@ void publishLaserFromSonar() {
   for (unsigned int i = 0; i < NUMBER_OF_SONAR_SENSORS; ++i)
   {
     // Place sonar data into correct position in ranges array
-    int index = (sonar_directions[i] - MIN_ANGLE)/2;
+    int index = (sonar_directions[i] - MIN_ANGLE)/DEG_INCREMENT;
     ranges[index] = sonar_data[i];
     intensities[index] = 1.0;
   }
