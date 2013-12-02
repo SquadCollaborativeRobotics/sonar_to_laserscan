@@ -5,7 +5,7 @@
 
 #define PI 3.14159265
 #define DEG_TO_RAD(x) (x * PI / 180.0)
-#define MAX_RANGE 10.0 // meters
+#define MAX_RANGE 3.0 // meters
 #define MIN_ANGLE -144 // degrees
 #define MAX_ANGLE 144 // degrees
 #define DEG_INCREMENT 2 // degrees
@@ -16,13 +16,11 @@
 
 // Amigobot sonar directions in degrees
 // TODO : Move to cfg file
-static int sonar_directions[] = {-144, -90, -44, -12, 
-                                   12,  44,  90, 144
-                                };
+static int sonar_directions[] = {90, 44, 12, -12, -44, -90, -144, 144};
 
 // Initialize sonar data with default values
 double sonar_data[NUMBER_OF_SONAR_SENSORS] = {1, 1, 1, 1, 1, 1, 1, 1};
-ros::Time scan_time;
+ros::Time sonar_timestamp;
 
 // -144 to 144 degrees in 2 deg increments, plus 1 to include angle max in array
 
@@ -35,6 +33,7 @@ double intensities[NUM_READINGS];
 ros::Publisher scan_pub;
 
 // Uses global sonar_data to generate laserscan data and publish
+// Uses global sonar_timestamp to generate timestamp
 void publishLaserFromSonar() {
   // Generate empty data outside of the range for our laser scan
   for(unsigned int i = 0; i < NUM_READINGS; ++i){
@@ -53,7 +52,7 @@ void publishLaserFromSonar() {
 
   // Populate the LaserScan message
   sensor_msgs::LaserScan scan;
-  scan.header.stamp = scan_time;
+  scan.header.stamp = sonar_timestamp;
   scan.header.frame_id = "laser_frame";
   scan.angle_min = DEG_TO_RAD(MIN_ANGLE);
   scan.angle_max = DEG_TO_RAD(MAX_ANGLE);
@@ -78,7 +77,7 @@ void sonarCallback(const sensor_msgs::PointCloud::ConstPtr& msg){
     sonar_data[i] = magnitude(msg->points[i].x, msg->points[i].y);
   }
   // Get time of scan
-  scan_time = msg->header.stamp;
+  sonar_timestamp = msg->header.stamp;
   
   publishLaserFromSonar();
 }
