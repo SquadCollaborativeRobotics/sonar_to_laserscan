@@ -16,7 +16,10 @@
 
 // Amigobot sonar directions in degrees
 // TODO : Move to cfg file
-static int sonar_directions[] = {90, 44, 12, -12, -44, -90, -144, 144};
+// static int sonar_directions[] = {90, 44, 12, -12, -44, -90, -144, 144};
+
+// p3dx sonar directions in degrees
+static int sonar_directions[] = {90, 67.5, 45, 22.5, -22.5, -45, -67.5, -90};
 
 // Initialize sonar data with default values
 double sonar_data[NUMBER_OF_SONAR_SENSORS] = {1, 1, 1, 1, 1, 1, 1, 1};
@@ -31,6 +34,9 @@ double ranges[NUM_READINGS];
 double intensities[NUM_READINGS];
 
 ros::Publisher scan_pub;
+
+// Transform prefix, set as param
+std::string tf_prefix;
 
 // Uses global sonar_data to generate laserscan data and publish
 // Uses global sonar_timestamp to generate timestamp
@@ -47,13 +53,13 @@ void publishLaserFromSonar() {
     // Place sonar data into correct position in ranges array
     int index = (sonar_directions[i] - MIN_ANGLE)/DEG_INCREMENT;
     ranges[index] = sonar_data[i];
-    intensities[index] = 1.0;
+    intensities[index] = 0.5;
   }
 
   // Populate the LaserScan message
   sensor_msgs::LaserScan scan;
   scan.header.stamp = sonar_timestamp;
-  scan.header.frame_id = "base_link";
+  scan.header.frame_id = tf_prefix + "/base_link";
   scan.angle_min = DEG_TO_RAD(MIN_ANGLE);
   scan.angle_max = DEG_TO_RAD(MAX_ANGLE);
   scan.angle_increment = DEG_TO_RAD(DEG_INCREMENT);
@@ -91,11 +97,18 @@ int main(int argc, char** argv){
   ros::init(argc, argv, "laser_scan_publisher");
   ros::NodeHandle n;
 
+  // Get TF prefix
+  tf_prefix = "";
+  if (n.getParam("tf_prefix", tf_prefix))
+      ROS_INFO_STREAM("Read tf prefix: " << tf_prefix);
+  else
+      ROS_ERROR_STREAM("Did not read tf_prefix: default = " << tf_prefix);
+
   // Publish generated laserscan data with a queue size of 50
   scan_pub = n.advertise<sensor_msgs::LaserScan>("scan", 50);
   
   // Subscribe to sonar data with queue size of 100
-  ros::Subscriber goal_sub = n.subscribe("amigobot_node/sonar", 100, sonarCallback);
+  ros::Subscriber goal_sub = n.subscribe("p3_node/sonar", 100, sonarCallback);
 
   ros::spin();
 }
